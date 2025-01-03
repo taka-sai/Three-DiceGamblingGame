@@ -80,43 +80,71 @@
   <button id="rollButton">サイコロを振る</button>
   <p id="result"></p>
 
-  <script>
-    const rollButton = document.getElementById('rollButton');
-    const dice1 = document.getElementById('dice1');
-    const dice2 = document.getElementById('dice2');
-    const dice3 = document.getElementById('dice3');
-    const result = document.getElementById('result');
+<script>
+  const rollButton = document.getElementById('rollButton');
+  const dice1 = document.getElementById('dice1');
+  const dice2 = document.getElementById('dice2');
+  const dice3 = document.getElementById('dice3');
+  const result = document.getElementById('result');
 
-    function getRandomDiceFace() {
-      return Math.floor(Math.random() * 6) + 1;
+  function getRandomDiceFace() {
+    return Math.floor(Math.random() * 6) + 1;
+  }
+
+  function updateDice(diceElement, faceValue) {
+    diceElement.querySelector('.dice-face').textContent = faceValue;
+  }
+
+  function evaluateChinchirorin(diceValues) {
+    const [a, b, c] = diceValues.sort((x, y) => x - y);
+
+    // シゴロ（勝ち）
+    if (a === 4 && b === 5 && c === 6) {
+      return "シゴロ！勝ち！";
     }
 
-    function updateDice(diceElement, faceValue) {
-      diceElement.querySelector('.dice-face').textContent = faceValue;
+    // ヒフミ（負け）
+    if (a === 1 && b === 2 && c === 3) {
+      return "ヒフミ...負け！";
     }
 
-    rollButton.addEventListener('click', () => {
-      const dice1Value = getRandomDiceFace();
-      const dice2Value = getRandomDiceFace();
-      const dice3Value = getRandomDiceFace();
+    // ゾロ目（役満）
+    if (a === b && b === c) {
+      return `ゾロ目！[${a}, ${b}, ${c}] 強い！`;
+    }
 
-      dice1.style.animation = 'roll 1s ease-in-out';
-      dice2.style.animation = 'roll 1s ease-in-out';
-      dice3.style.animation = 'roll 1s ease-in-out';
+    // ポイントを決定
+    if (a === b) return `ポイント: ${c}`;
+    if (b === c) return `ポイント: ${a}`;
+    if (a === c) return `ポイント: ${b}`;
 
-      setTimeout(() => {
-        updateDice(dice1, dice1Value);
-        updateDice(dice2, dice2Value);
-        updateDice(dice3, dice3Value);
+    // 特に役がない
+    return "役なし...";
+  }
 
-        dice1.style.animation = '';
-        dice2.style.animation = '';
-        dice3.style.animation = '';
+  rollButton.addEventListener('click', () => {
+    const dice1Value = getRandomDiceFace();
+    const dice2Value = getRandomDiceFace();
+    const dice3Value = getRandomDiceFace();
 
-        const total = dice1Value + dice2Value + dice3Value;
-        result.textContent = `合計: ${total}`;
-      }, 1000);
-    });
-  </script>
+    dice1.style.animation = 'roll 1s ease-in-out';
+    dice2.style.animation = 'roll 1s ease-in-out';
+    dice3.style.animation = 'roll 1s ease-in-out';
+
+    setTimeout(() => {
+      updateDice(dice1, dice1Value);
+      updateDice(dice2, dice2Value);
+      updateDice(dice3, dice3Value);
+
+      dice1.style.animation = '';
+      dice2.style.animation = '';
+      dice3.style.animation = '';
+
+      const diceValues = [dice1Value, dice2Value, dice3Value];
+      const resultText = evaluateChinchirorin(diceValues);
+      result.textContent = resultText;
+    }, 1000);
+  });
+</script>
 </body>
 </html>
